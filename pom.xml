@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.gerasamba</groupId>
+  <artifactId>gerasamba-app</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>eclipse</id>
+      <url>https://repo.eclipse.org/content/groups/releases/</url>
+    </repository>
+    <repository>
+      <id>logus</id>
+      <url>http://maven.logusinfo.com.br/content/groups/Logus</url>
+    </repository>
+    <repository>
+      <id>maven-central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- Oracle JDBC -->
+    <dependency>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ojdbc8</artifactId>
+      <version>19.3.0.0</version>
+    </dependency>
+
+    <!-- SWT para Linux GTK 64-bit -->
+<dependency>
+  <groupId>org.eclipse.platform</groupId>
+  <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+  <version>4.27</version>
+</dependency>
+
+<dependency>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-math3</artifactId>
+  <version>3.6.1</version>
+</dependency>
+
+
+  </dependencies>
+  
+
+</project>
