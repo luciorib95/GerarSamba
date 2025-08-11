@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 public class ConnUtil {
     static String jdbcURL = "jdbc:oracle:thin:@//10.10.50.38:1521/orclpdbdsv";
-    static String username = "teste";
-    static String password = "teste";
+    static String username = "LOGUS";
+    static String password = "LOGUS";
 	
 	private static InheritableThreadLocal<Connection> connection;
 	
