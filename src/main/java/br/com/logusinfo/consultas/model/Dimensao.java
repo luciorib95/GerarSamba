@@ -1,11 +1,16 @@
 package br.com.logusinfo.consultas.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Dimensao implements Exportavel {
 	// ID_DIMENSAO, TIT_DIMENSAO, DES_DIMENSAO, FLG_VALIDO
 	private String id = "";
 	private String titulo = "";
 	private String descricao = "";
 	private String ehValido = "";
+	private List<Hierarquia> hierarquias = new ArrayList();
+	
 	public String getId() {
 		return id;
 	}
@@ -30,7 +35,22 @@ public class Dimensao implements Exportavel {
 	public void setValido(String valido) {
 		this.ehValido = valido;
 	}
-	public String DML(String esquemaDestino) {
+
+    /**
+     * @return {@link #hierarquias}
+     */
+    public List<Hierarquia> getHierarquias() {
+      return hierarquias;
+    }
+
+    /**
+     * @param hierarquias atualiza {@link #hierarquias}.
+     */
+    public void setHierarquias(List<Hierarquia> hierarquias) {
+      this.hierarquias = hierarquias;
+    }
+    
+  public String DML(String esquemaDestino) {
 		return "INSERT INTO "+esquemaDestino+".dimensao (\r\n"
 				+ "    id_dimensao,\r\n"
 				+ "    tit_dimensao,\r\n"

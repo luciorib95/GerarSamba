@@ -1,8 +1,7 @@
 package br.com.logusinfo.consultas.services;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.swt.widgets.Text;
 
@@ -11,6 +10,7 @@ import br.com.logusinfo.consultas.model.Consulta;
 import br.com.logusinfo.consultas.model.Cubo;
 import br.com.logusinfo.consultas.model.Dimensao;
 import br.com.logusinfo.consultas.model.Filtro;
+import br.com.logusinfo.consultas.model.Hierarquia;
 import br.com.logusinfo.consultas.model.Medida;
 import br.com.logusinfo.consultas.model.Nivel;
 import br.com.logusinfo.consultas.model.Node;
@@ -39,12 +39,14 @@ public class DiscoveryService {
 		PropriedadesService propriedadesService = new PropriedadesService(esquemaOrigem);
 		NiveisService niveisService = new NiveisService(esquemaOrigem);
 		DimensoesService dimensoesService = new DimensoesService(esquemaOrigem);
+		HierarquiasService hierarquiasService = new HierarquiasService(esquemaOrigem);
 		
 		// Recupero o ID da Consulta.
 		idConsulta = consultasService.getIdConsulta(opcaoConsulta);
 		
 		// Recupero o Objeto Consulta.
 		Consulta consulta = consultasService.getConsulta(idConsulta);
+		List<Dimensao> dimensoes = new ArrayList();
 		
 		// Atribui a coleção de compartilhamentos à consulta.
 		List<Compartilhamento> compartilhamentos = compartilhamentosService.getCompartilhamentos(consulta);
@@ -78,12 +80,28 @@ public class DiscoveryService {
 		}
 		consulta.setNodes(nodes);
 		List<Nivel> niveis = niveisService.getNiveis(cubo);
+		
 		for (Nivel nivel : niveis) {			
 			Dimensao dimensao = dimensoesService.getDimensao(nivel);
+			dimensoes.add(dimensao);
 			nivel.setDimensao(dimensao);
 		}
+		
+        List<Nivel> niveisDimensao = niveisService.getNiveis(cubo);
+        for (Nivel nivel : niveisDimensao) {
+          Dimensao dimensao = dimensoesService.getDimensao(nivel);
+          nivel.setDimensao(dimensao);
+        }
+        
+        niveis.addAll(niveisDimensao);
 		cubo.setNiveis(niveis);
 		cubo.setMedidasCubo(medidasService.getMedidasCubo(cubo.getTitulo(), consulta.getTituloConsulta()));
+		List<Hierarquia> hierarquias = new ArrayList<>();
+		for (Dimensao dimensao: dimensoes) {
+		  List<Hierarquia> hierarquiasDimensao = hierarquiasService.getHierarquias(dimensao.getId());
+		  dimensao.setHierarquias(hierarquiasDimensao);
+		  hierarquias.addAll(hierarquiasDimensao);
+		}
 		
 		List<Propriedade> propriedades = propriedadesService.getPropriedades(consulta);
 		for (Propriedade propriedade : propriedades) {
