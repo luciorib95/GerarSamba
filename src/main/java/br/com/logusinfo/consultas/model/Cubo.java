@@ -104,6 +104,7 @@ public class Cubo implements Exportavel{
 	            + ");\r\n";
 
 	    for (Nivel nivel : niveis) {
+	      if (nivel.getNivelCubo()==true) {
 	        dml += "\n-- NIVEL CUBO ----------------------\n";
 	        dml += "INSERT INTO " + esquemaDestino + ".nivel_cubo (\r\n"
 	                + "    id_cubo,\r\n"
@@ -128,6 +129,7 @@ public class Cubo implements Exportavel{
 	                + "                        AND D.TIT_DIMENSAO = '" + nivel.getDimensao().getTitulo() + "')\r\n"
 	                + ");\r\n";
 	        dml += "-- ------------------------------\n";
+	      }
 	    }
 
 	    return dml;

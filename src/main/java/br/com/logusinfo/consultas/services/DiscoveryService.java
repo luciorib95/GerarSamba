@@ -87,12 +87,12 @@ public class DiscoveryService {
 			nivel.setDimensao(dimensao);
 		}
 		
-        List<Nivel> niveisDimensao = niveisService.getNiveis(cubo);
+        List<Nivel> niveisDimensao = niveisService.getNiveisDimensao(cubo);
         for (Nivel nivel : niveisDimensao) {
           Dimensao dimensao = dimensoesService.getDimensao(nivel);
+          dimensoes.add(dimensao);
           nivel.setDimensao(dimensao);
         }
-        
         niveis.addAll(niveisDimensao);
 		cubo.setNiveis(niveis);
 		cubo.setMedidasCubo(medidasService.getMedidasCubo(cubo.getTitulo(), consulta.getTituloConsulta()));
