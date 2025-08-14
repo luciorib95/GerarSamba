@@ -21,7 +21,9 @@ public class PropriedadesService {
 		PropriedadesRepository repository = new PropriedadesRepository(esquemaOrigem);
 		List<Propriedade> propriedades = repository.getPropriedades(idConsulta);
 		List<Propriedade> propriedadesNiveis = repository.getPropriedadeNiveis(idConsulta);
+		List<Propriedade> propriedadesForaCubo = repository.getPropriedadesForaCubo(consulta.getCubo().getId());
 		propriedades.addAll(propriedadesNiveis);
+		propriedades.addAll(propriedadesForaCubo);
 		return propriedades;
-	}
+	}	
 }

@@ -151,8 +151,58 @@ public class PropriedadesRepository {
 
       return propriedades;
   }
+    
+    public List<Propriedade> getPropriedadesForaCubo(String idCubo) {
+      List<Propriedade> propriedades = new ArrayList<>();
 
+      try {
+          connection = ConnUtil.init();
+          sql = new StringBuilder();
 
+          sql.append("SELECT * FROM ").append(esquemaOrigem).append(".PROPRIEDADE p WHERE p.ID_NIVEL IN (")
+             .append("SELECT n.ID_NIVEL ")
+             .append("FROM ").append(esquemaOrigem).append(".NIVEL n ")
+             .append("WHERE n.ID_DIMENSAO IN (")
+             .append("    SELECT DISTINCT n2.ID_DIMENSAO ")
+             .append("    FROM ").append(esquemaOrigem).append(".NIVEL n2 ")
+             .append("    JOIN ").append(esquemaOrigem).append(".NIVEL_CUBO nc2 ON n2.ID_NIVEL = nc2.ID_NIVEL ")
+             .append("    WHERE nc2.ID_CUBO = ?")
+             .append(") ")
+             .append("AND n.ID_NIVEL NOT IN (")
+             .append("    SELECT nc3.ID_NIVEL ")
+             .append("    FROM ").append(esquemaOrigem).append(".NIVEL_CUBO nc3 ")
+             .append("    WHERE nc3.ID_CUBO = ?")
+             .append("))");
 
+          pstmt = connection.prepareStatement(sql.toString());
+          pstmt.setString(1, idCubo);
+          pstmt.setString(2, idCubo);
+
+          ResultSet rs = pstmt.executeQuery();
+
+          while (rs.next()) {
+              Propriedade propriedade = new Propriedade();
+              propriedade.setId(rs.getString("ID_PROPRIEDADE"));
+              propriedade.setIdNivel(rs.getString("ID_NIVEL"));
+              propriedade.setNomeColuna(rs.getString("NOM_COLUNA"));
+              propriedade.setTitPropriedade(rs.getString("TIT_PROPRIEDADE"));
+              propriedade.setChave(rs.getString("CHAVE"));
+              propriedade.setDescricaoPadrao(rs.getString("DESC_PADRAO"));
+              propriedade.setTipoPropriedade(rs.getString("TIP_PROPRIEDADE"));
+              propriedade.setEhOculta(rs.getString("OCULTA"));
+              propriedade.setGeoRef(rs.getString("GEOREF"));
+
+              propriedades.add(propriedade);
+          }
+
+          rs.close();
+          pstmt.close();
+
+      } catch (ConnectionException | SQLException e) {
+          e.printStackTrace();
+      }
+
+      return propriedades;
+  }
 
 }
