@@ -1,8 +1,5 @@
 package br.com.logusinfo.consultas.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Nivel implements Exportavel {
 	private String idNivel = "";
 	private String idCubo = "";
@@ -118,7 +115,7 @@ public class Nivel implements Exportavel {
 	}
 
 	public String DML(String esquemaDestino) { // Linguagem de Manipulação de Dados (INSERT, UPDATE, DELETE)
-		// Criar script para Nivel_Cubo e Nivel.
+		// Criar script para Nivel.
 		return "INSERT INTO "+esquemaDestino+".nivel ( \r\n"
 				+ "    id_nivel, \r\n"
 				+ "    id_dimensao, \r\n"
