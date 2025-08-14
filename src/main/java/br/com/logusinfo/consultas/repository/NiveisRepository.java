@@ -62,6 +62,7 @@ public class NiveisRepository {
 				nivel.setColunaTitulo(rs.getString(9));
 				nivel.setMascara(rs.getString(10));
 				nivel.setEsquema(rs.getString(11));
+				nivel.setNivelCubo(true);
 				niveis.add(nivel);
 			}
 		} catch (Exception e) {
@@ -102,6 +103,7 @@ public class NiveisRepository {
 				nivel.setColunaTitulo(rs.getString(7));
 				nivel.setMascara(rs.getString(8));
 				nivel.setEsquema(rs.getString(9));
+				nivel.setNivelCubo(true);
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -109,5 +111,66 @@ public class NiveisRepository {
 		}
 		return nivel;
 	}
+	
+	/**
+	 * @param idCubo
+	 * @return niveis que fazem parte de dimensões do cubo mas que não estão ligados diretamente
+	 * ao cubo
+	 */
+	public List<Nivel> getNiveisDimensao(String idCubo) {
+	    List<Nivel> niveis = new ArrayList<Nivel>();
+	    try {
+	        connection = ConnUtil.init();
+	        sql = new StringBuilder();
+	        sql.append(" SELECT \r\n" 
+	                + "    n.id_nivel, \r\n" 
+	                + "    n.id_dimensao, \r\n" 
+	                + "    n.tit_nivel, \r\n"
+	                + "    n.tit_abreviado, \r\n" 
+	                + "    n.tab_nivel, \r\n" 
+	                + "    n.col_nivel, \r\n"
+	                + "    n.col_titulo, \r\n" 
+	                + "    n.des_mascara, \r\n" 
+	                + "    n.esquema \r\n"
+	                + " FROM " + esquemaOrigem + ".nivel n \r\n"
+	                + " WHERE n.id_dimensao IN ( \r\n"
+	                + "     SELECT DISTINCT n2.id_dimensao \r\n"
+	                + "     FROM " + esquemaOrigem + ".nivel n2 \r\n"
+	                + "     JOIN " + esquemaOrigem + ".nivel_cubo nc2 \r\n"
+	                + "         ON n2.id_nivel = nc2.id_nivel \r\n"
+	                + "     WHERE nc2.id_cubo = ? \r\n"
+	                + " ) \r\n"
+	                + " AND n.id_nivel NOT IN ( \r\n"
+	                + "     SELECT nc3.id_nivel \r\n"
+	                + "     FROM " + esquemaOrigem + ".nivel_cubo nc3 \r\n"
+	                + "     WHERE nc3.id_cubo = ? \r\n"
+	                + " )");
+
+	        pstmt = connection.prepareStatement(sql.toString());
+	        pstmt.setString(1, idCubo);
+	        pstmt.setString(2, idCubo);
+
+	        ResultSet rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	            Nivel nivel = new Nivel();
+	            nivel.setIdNivel(rs.getString(1));
+	            nivel.setIdDimensao(rs.getString(2));
+	            nivel.setTitulo(rs.getString(3));
+	            nivel.setAbreviacao(rs.getString(4));
+	            nivel.setTabelaNivel(rs.getString(5));
+	            nivel.setColunaNivel(rs.getString(6));
+	            nivel.setColunaTitulo(rs.getString(7));
+	            nivel.setMascara(rs.getString(8));
+	            nivel.setEsquema(rs.getString(9));
+	            nivel.setNivelCubo(false);
+	            niveis.add(nivel);
+	        }
+	    } catch (Exception e) {
+	        System.err.println(e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return niveis;
+	}
+
 
 }

@@ -23,6 +23,12 @@ public class NiveisService {
 		List<Nivel> niveis = repository.getNiveisCubo(idCubo);
 		return niveis;
 	}
+	
+    public List<Nivel> getNiveisDimensao(Cubo cubo) {
+      String idCubo = cubo.getId();
+      List<Nivel> niveis = repository.getNiveisDimensao(idCubo);
+      return niveis;
+    }
 
 	public Nivel getNivel(Node node) {
 		String idNivel = node.getIdNivel();

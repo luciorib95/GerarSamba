@@ -16,6 +16,8 @@ public class Nivel implements Exportavel {
 	private String colunasFato = "";
 	private String mascara = "";
 	private String esquema = "";
+	private Boolean nivelCubo = true;
+	
 	private Cubo cubo = new Cubo();
 	public Dimensao getDimensao() {
 		return dimensao;
@@ -106,6 +108,15 @@ public class Nivel implements Exportavel {
 		idDimensao = (idDimensao==null)?"":idDimensao;
 		this.idDimensao = idDimensao;
 	}
+	
+	public Boolean getNivelCubo() {
+	    return nivelCubo;
+	}
+
+	public void setNivelCubo(Boolean nivelCubo) {
+	    this.nivelCubo = nivelCubo;
+	}
+
 	public String DML(String esquemaDestino) { // Linguagem de Manipulação de Dados (INSERT, UPDATE, DELETE)
 		// Criar script para Nivel_Cubo e Nivel.
 		return "INSERT INTO "+esquemaDestino+".nivel ( \r\n"
