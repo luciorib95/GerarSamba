@@ -3,6 +3,7 @@ package br.com.logusinfo.consultas.services;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,8 +17,10 @@ import br.com.logusinfo.consultas.model.Consulta;
 import br.com.logusinfo.consultas.model.Cubo;
 import br.com.logusinfo.consultas.model.Dimensao;
 import br.com.logusinfo.consultas.model.Filtro;
+import br.com.logusinfo.consultas.model.Hierarquia;
 import br.com.logusinfo.consultas.model.Medida;
 import br.com.logusinfo.consultas.model.Nivel;
+import br.com.logusinfo.consultas.model.NivelHierarquia;
 import br.com.logusinfo.consultas.model.Node;
 import br.com.logusinfo.consultas.model.Propriedade;
 
@@ -42,6 +45,7 @@ public class ScriptsService {
 		Set<String> jahEscritos = new HashSet<String>();
 		Cubo cubo = consulta.getCubo();
 		List<Nivel> niveis = cubo.getNiveis();
+		List<Dimensao> dimensoes = new ArrayList<>();
 		String chave = "";
 		for (Nivel nivel : niveis) {
 			Dimensao dimensao = nivel.getDimensao();
@@ -53,6 +57,7 @@ public class ScriptsService {
 					jahEscritos.add(chave);
 				}
 				scriptDML.append("--------------------------\n");
+				dimensoes.add(dimensao);
 			}
 			scriptDML.append("--NIVEL--------------------\n");
 			chave = nivel.getClass().getTypeName()+nivel.getIdNivel();
@@ -142,6 +147,22 @@ public class ScriptsService {
             scriptDML.append("--------------------------\n");
           }
 		}
+		
+		for (Dimensao dimensao : dimensoes) {
+		  List<Hierarquia> hierarquias = dimensao.getHierarquias();
+		  for (Hierarquia hierarquia : hierarquias) {
+            if(null != hierarquia && null!=hierarquia.getTitulo() && !hierarquia.getTitulo().isBlank()) {
+              scriptDML.append("--Hierarquia-------------------\n");
+              chave = hierarquia.getClass().getTypeName()+hierarquia.getId();
+              if(!jahEscritos.contains(chave)) {
+                  scriptDML.append(hierarquia.DML(esquemaDestino)+"\n");
+                  jahEscritos.add(chave);
+              }
+              scriptDML.append("--------------------------\n");
+              }
+		  }
+		}
+		
 		
 		List<Propriedade> propriedades = consulta.getPropriedades();
 		

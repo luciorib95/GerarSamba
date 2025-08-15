@@ -60,7 +60,7 @@ public class Medida implements Exportavel{
 	}
 	
 	private String sqlValue(String valor) {
-	    return valor == null ? "NULL" : "'" + valor.replace("'", "''") + "'";
+	  return valor == null ? null : valor.replace("'", "''");
 	}
 
 	@Override

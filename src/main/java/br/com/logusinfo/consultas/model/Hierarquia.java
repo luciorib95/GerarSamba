@@ -5,16 +5,22 @@ import java.util.List;
 
 public class Hierarquia implements Exportavel{
     private String id = "";
-    private String idDimensao = "";
+    private Dimensao dimensao;
     private String titulo = "";
     private List<NivelHierarquia> niveisHierarquia = new ArrayList<>();
-    
-    public String getIdDimensao() {
-        return idDimensao;
+
+    /**
+     * @return {@link #dimensao}
+     */
+    public Dimensao getDimensao() {
+      return dimensao;
     }
 
-    public void setIdDimensao(String idDimensao) {
-        this.idDimensao = idDimensao;
+    /**
+     * @param dimensao atualiza {@link #dimensao}.
+     */
+    public void setDimensao(Dimensao dimensao) {
+      this.dimensao = dimensao;
     }
 
     public String getId() {
@@ -34,7 +40,7 @@ public class Hierarquia implements Exportavel{
     }
 
     private String sqlValue(String valor) {
-        return valor == null ? "NULL" : "'" + valor.replace("'", "''") + "'";
+      return valor == null ? null : valor.replace("'", "''");
     } 
 
     /**
@@ -52,24 +58,55 @@ public class Hierarquia implements Exportavel{
     }
 
     public String DML(String esquemaDestino) {
-        return "INSERT INTO " + esquemaDestino + ".HIERARQUIA (\n" +
-               "    ID_HIERARQUIA,\n" +
-               "    ID_DIMENSAO,\n" +
-               "    TIT_HIERARQUIA\n" +
-               ") \n" +
-               "WITH IDHIERARQUIA AS (\n" +
-               "    SELECT LPAD(MAX(ID_HIERARQUIA)+1,6,'0') AS ID FROM " + esquemaDestino + ".HIERARQUIA\n" +
-               ")\n" +
-               "SELECT\n" +
-               "    IDHIERARQUIA.ID,\n" +
-               "    " + sqlValue(this.idDimensao) + ",\n" +
-               "    " + sqlValue(this.titulo) + "\n" +
-               "FROM DUAL, IDHIERARQUIA\n" +
-               "WHERE NOT EXISTS (\n" +
-               "    SELECT NULL FROM " + esquemaDestino + ".HIERARQUIA \n" +
-               "    WHERE TIT_HIERARQUIA = " + sqlValue(this.titulo) + " \n" +
-               "    AND ID_DIMENSAO = " + sqlValue(this.idDimensao) + "\n" +
-               ");";
+      String dml = "INSERT INTO " + esquemaDestino + ".HIERARQUIA (\n" 
+               + "    ID_HIERARQUIA,\n" 
+               + "    ID_DIMENSAO,\n" 
+               + "    TIT_HIERARQUIA\n" 
+               + ") SELECT \r\n"
+               + "    (SELECT LPAD(MAX(ID_HIERARQUIA)+1,6,'0') FROM " + esquemaDestino + ".HIERARQUIA),\r\n" 
+               + "    (SELECT ID_DIMENSAO FROM " + esquemaDestino + ".DIMENSAO \r\n"
+               + "      WHERE TIT_DIMENSAO = '" + this.getDimensao().getTitulo() + "'),\r\n"
+               + "    " + sqlValue(this.titulo) + "'),\r\n"
+               + " FROM DUAL\r\n"
+               + "WHERE NOT EXISTS (\n" 
+               + "    SELECT NULL FROM " + esquemaDestino + ".HIERARQUIA \n" 
+               + "    WHERE TIT_HIERARQUIA = " + sqlValue(this.titulo) + " \n" 
+               + "   AND ID_DIMENSAO (SELECT ID_DIMENSAO FROM " + esquemaDestino + ".DIMENSAO \r\n"
+               + "      WHERE TIT_DIMENSAO = '" + this.getDimensao().getTitulo() + "'),\r\n"
+               + ");\r\n";
+        
+        for (NivelHierarquia nivelhierarquia : this.getNiveisHierarquia()) {
+          if (!nivelhierarquia.equals(null)) {
+            dml += "\n-- NIVEL HIERARQUIA ----------------------\n";
+            dml += "INSERT INTO " + esquemaDestino + ".nivel_hierarquia (\r\n"
+                + "    ID_HIERARQUIA,\r\n"
+                + "    ID_NIVEL,\r\n"
+                + "    COL_JOIN,\r\n"
+                + "    SEQ_NIVEL\r\n"
+                + ") SELECT \r\n"
+                + "    (SELECT ID_HIERARQUIA FROM " + esquemaDestino + ".HIERARQUIA \r\n"
+                + "     WHERE TIT_HIERARQUIA = '" + this.titulo + "'),\r\n"
+                + "    (SELECT N.ID_NIVEL FROM " + esquemaDestino + ".NIVEL N \r\n"
+                + "     JOIN " + esquemaDestino + ".DIMENSAO D ON N.ID_DIMENSAO = D.ID_DIMENSAO \r\n"
+                + "     WHERE N.TIT_NIVEL = '" + nivelhierarquia.getNivel().getTitulo() + "' \r\n"
+                + "       AND D.TIT_DIMENSAO = '" + this.getDimensao().getTitulo() + "'),\r\n"
+                + "    " + sqlValue(nivelhierarquia.getColunaJuncao()) + ",\r\n"
+                + "    '" + nivelhierarquia.getSeqNivel() + "'\r\n"
+                + " FROM DUAL\r\n"
+                + " WHERE NOT EXISTS (\r\n"
+                + "    SELECT NULL FROM " + esquemaDestino + ".nivel_hierarquia \r\n"
+                + "    WHERE ID_HIERARQUIA = (SELECT ID_HIERARQUIA FROM " + esquemaDestino + ".HIERARQUIA \r\n"
+                + "                    WHERE TIT_HIERARQUIA = '" + this.titulo + "')\r\n"
+                + "      AND ID_NIVEL = (SELECT N.ID_NIVEL FROM " + esquemaDestino + ".NIVEL N \r\n"
+                + "                      JOIN " + esquemaDestino + ".DIMENSAO D ON N.ID_DIMENSAO = D.ID_DIMENSAO \r\n"
+                + "                      WHERE N.TIT_NIVEL = '" + nivelhierarquia.getNivel().getTitulo() + "' \r\n"
+                + "                        AND D.TIT_DIMENSAO = '" + this.getDimensao().getTitulo() + "')\r\n"
+                + ");\r\n";
+        dml += "-- ------------------------------\n";
+          }
+        }
+        
+        return dml;
     }
 
     @Override

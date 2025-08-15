@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.logusinfo.consultas.ConnUtil;
+import br.com.logusinfo.consultas.model.Dimensao;
 import br.com.logusinfo.consultas.model.Hierarquia;
 import br.com.logusinfo.consultas.model.Nivel;
 
@@ -24,7 +25,7 @@ public class HierarquiasRepository {
 		this.esquemaOrigem = esquemaOrigem;
 	}
 
-	public List<Hierarquia> getHierarquias(String idDimensao) {
+	public List<Hierarquia> getHierarquias(Dimensao dimensao) {
 	    List<Hierarquia> hierarquias = new ArrayList<>();
 	    try {
 	        connection = ConnUtil.init();
@@ -36,11 +37,12 @@ public class HierarquiasRepository {
 	           .append("WHERE h.ID_DIMENSAO = ? ");
 
 	        pstmt = connection.prepareStatement(sql.toString());
-	        pstmt.setString(1, idDimensao);
+	        pstmt.setString(1, dimensao.getId());
 
 	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) {
 	            Hierarquia hierarquia = new Hierarquia();
+	            hierarquia.setDimensao(dimensao);
 	            hierarquia.setId(rs.getString("ID_HIERARQUIA"));
 	            hierarquia.setTitulo(rs.getString("TIT_HIERARQUIA"));
 	            hierarquias.add(hierarquia);

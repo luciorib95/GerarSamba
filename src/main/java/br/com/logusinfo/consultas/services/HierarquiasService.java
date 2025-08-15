@@ -19,8 +19,8 @@ public class HierarquiasService {
 		// TODO Auto-generated constructor stub
 	}
 
-	public List<Hierarquia> getHierarquias(String idDimensao) {
-		List<Hierarquia> hierarquias = repository.getHierarquias(idDimensao);	  
+	public List<Hierarquia> getHierarquias(Dimensao dimensao) {
+		List<Hierarquia> hierarquias = repository.getHierarquias(dimensao);	  
 		return hierarquias;
 	}
 

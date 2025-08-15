@@ -8,6 +8,7 @@ import java.util.List;
 
 import br.com.logusinfo.consultas.ConnUtil;
 import br.com.logusinfo.consultas.model.Hierarquia;
+import br.com.logusinfo.consultas.model.Nivel;
 import br.com.logusinfo.consultas.model.NivelHierarquia;
 
 public class NiveisHierarquiasRepository {
@@ -24,7 +25,7 @@ public class NiveisHierarquiasRepository {
 		this.esquemaOrigem = esquemaOrigem;
 	}
 
-	public List<NivelHierarquia> getNiveisHierarquias(String idHierarquia) {
+	public List<NivelHierarquia> getNiveisHierarquias(Hierarquia hierarquia, Nivel nivel) {
 	    List<NivelHierarquia> niveisHierarquia = new ArrayList<>();
 	    try {
 	        connection = ConnUtil.init();
@@ -34,14 +35,17 @@ public class NiveisHierarquiasRepository {
 	           .append("h.COL_JOIN, ")
 	           .append("h.SEQ_NIVEL ")
 	           .append("FROM ").append(esquemaOrigem).append(".NIVEL_HIERARQUIA h ")
-	           .append("WHERE h.ID_DIMENSAO = ? ");
+	           .append("WHERE h.ID_HIERARQUIA = ? AND h.ID_NIVEL = ?");
 
 	        pstmt = connection.prepareStatement(sql.toString());
-	        pstmt.setString(1, idHierarquia);
+	        pstmt.setString(1, hierarquia.getId());
+	        pstmt.setString(2, nivel.getIdNivel());
 
 	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) {
 	            NivelHierarquia nivelHierarquia = new NivelHierarquia();
+	            nivelHierarquia.setHierarquia(hierarquia);
+	            nivelHierarquia.setNivel(nivel);
 	            nivelHierarquia.setColunaJuncao(rs.getString("COL_JOIN"));
 	            nivelHierarquia.setSeqNivel(rs.getString("SEQ_NIVEL"));
 	            niveisHierarquia.add(nivelHierarquia);

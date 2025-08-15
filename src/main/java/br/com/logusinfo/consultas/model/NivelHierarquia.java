@@ -4,7 +4,7 @@ package br.com.logusinfo.consultas.model;
  * @author lucio.santos
  *
  */
-public class NivelHierarquia {
+public class NivelHierarquia implements Exportavel {
   
   private Nivel nivel;
   private Hierarquia hierarquia;
@@ -57,6 +57,17 @@ public class NivelHierarquia {
    */
   public void setSeqNivel(String seqNivel) {
     this.seqNivel = seqNivel;
+  } 
+
+  @Override
+  public String DML(String esquemaDestino, String idPropriedade) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  @Override
+  public String DML(String esquemaDestino) {
+    // TODO Auto-generated method stub
+    return null;
   }
   
 

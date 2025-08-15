@@ -13,6 +13,7 @@ import br.com.logusinfo.consultas.model.Filtro;
 import br.com.logusinfo.consultas.model.Hierarquia;
 import br.com.logusinfo.consultas.model.Medida;
 import br.com.logusinfo.consultas.model.Nivel;
+import br.com.logusinfo.consultas.model.NivelHierarquia;
 import br.com.logusinfo.consultas.model.Node;
 import br.com.logusinfo.consultas.model.Propriedade;
 import br.com.logusinfo.consultas.model.Visibilidade;
@@ -40,6 +41,7 @@ public class DiscoveryService {
 		NiveisService niveisService = new NiveisService(esquemaOrigem);
 		DimensoesService dimensoesService = new DimensoesService(esquemaOrigem);
 		HierarquiasService hierarquiasService = new HierarquiasService(esquemaOrigem);
+		NiveisHierarquiasService nivesHierarquiasService = new NiveisHierarquiasService(esquemaOrigem);
 		
 		// Recupero o ID da Consulta.
 		idConsulta = consultasService.getIdConsulta(opcaoConsulta);
@@ -83,25 +85,38 @@ public class DiscoveryService {
 		
 		for (Nivel nivel : niveis) {			
 			Dimensao dimensao = dimensoesService.getDimensao(nivel);
+			
+            List<Hierarquia> hierarquiasDimensao = hierarquiasService
+                .getHierarquias(dimensao);
+            for (Hierarquia hierarquia : hierarquiasDimensao) {
+              List<NivelHierarquia> niveisHierarquia = nivesHierarquiasService
+                  .getNiveisHierarquiasgetNiveisHierarquias(hierarquia,
+                                                            nivel);
+              hierarquia.setNiveisHierarquia(niveisHierarquia);
+            }
+            dimensao.setHierarquias(hierarquiasDimensao);
+			
 			dimensoes.add(dimensao);
 			nivel.setDimensao(dimensao);
 		}
 		
         List<Nivel> niveisDimensao = niveisService.getNiveisDimensao(cubo);
         for (Nivel nivel : niveisDimensao) {
-          Dimensao dimensao = dimensoesService.getDimensao(nivel);                 
+          Dimensao dimensao = dimensoesService.getDimensao(nivel);   
+          
+          List<Hierarquia> hierarquiasDimensao = hierarquiasService.getHierarquias(dimensao);
+          for (Hierarquia hierarquia: hierarquiasDimensao) {
+            List<NivelHierarquia> niveisHierarquia = nivesHierarquiasService.getNiveisHierarquiasgetNiveisHierarquias(hierarquia, nivel);
+            hierarquia.setNiveisHierarquia(niveisHierarquia);
+          }
+          dimensao.setHierarquias(hierarquiasDimensao);
+          
           dimensoes.add(dimensao);
           nivel.setDimensao(dimensao);
         }
         niveis.addAll(niveisDimensao);
 		cubo.setNiveis(niveis);
 		cubo.setMedidasCubo(medidasService.getMedidasCubo(cubo.getTitulo(), consulta.getTituloConsulta()));
-		List<Hierarquia> hierarquias = new ArrayList<>();
-		for (Dimensao dimensao: dimensoes) {
-		  List<Hierarquia> hierarquiasDimensao = hierarquiasService.getHierarquias(dimensao.getId());
-		  dimensao.setHierarquias(hierarquiasDimensao);
-		  hierarquias.addAll(hierarquiasDimensao);
-		}
 		
 		List<Propriedade> propriedades = propriedadesService.getPropriedades(consulta);
 		for (Propriedade propriedade : propriedades) {
