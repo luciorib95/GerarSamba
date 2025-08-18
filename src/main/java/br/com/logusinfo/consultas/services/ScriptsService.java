@@ -151,14 +151,14 @@ public class ScriptsService {
 		for (Dimensao dimensao : dimensoes) {
 		  List<Hierarquia> hierarquias = dimensao.getHierarquias();
 		  for (Hierarquia hierarquia : hierarquias) {
-            if(null != hierarquia && null!=hierarquia.getTitulo() && !hierarquia.getTitulo().isBlank()) {
-              scriptDML.append("--Hierarquia-------------------\n");
+            if(null != hierarquia && null!=hierarquia.getTitulo() && !hierarquia.getTitulo().isBlank()) {             
               chave = hierarquia.getClass().getTypeName()+hierarquia.getId();
               if(!jahEscritos.contains(chave)) {
+                  scriptDML.append("--Hierarquia-------------------\n");
                   scriptDML.append(hierarquia.DML(esquemaDestino)+"\n");
                   jahEscritos.add(chave);
+                  scriptDML.append("--------------------------\n");
               }
-              scriptDML.append("--------------------------\n");
               }
 		  }
 		}

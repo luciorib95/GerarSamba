@@ -115,33 +115,37 @@ public class Nivel implements Exportavel {
 	}
 
 	public String DML(String esquemaDestino) { // Linguagem de Manipulação de Dados (INSERT, UPDATE, DELETE)
-		// Criar script para Nivel.
-		return "INSERT INTO "+esquemaDestino+".nivel ( \r\n"
-				+ "    id_nivel, \r\n"
-				+ "    id_dimensao, \r\n"
-				+ "    tit_nivel, \r\n"
-				+ "    tit_abreviado, \r\n"
-				+ "    tab_nivel, \r\n"
-				+ "    col_nivel, \r\n"
-				+ "    col_titulo, \r\n"
-				+ "    des_mascara, \r\n"
-				+ "    esquema \r\n"
-				+ ") SELECT \r\n"
-				+ "    (SELECT LPAD(MAX(ID_NIVEL)+1,6,'0') FROM "+esquemaDestino+".NIVEL),\r\n"
-				+ "    (SELECT ID_DIMENSAO FROM \r\n"
-				+ "		"+esquemaDestino+".DIMENSAO \r\n"
-				+ "		WHERE TIT_DIMENSAO = '"+this.dimensao.getTitulo()+"'), \r\n"
-				+ "    '"+this.titulo+"', \r\n"
-				+ "    '"+this.abreviacao+"', \r\n"
-				+ "    '"+this.tabelaNivel+"', \r\n"
-				+ "    '"+this.colunaNivel+"', \r\n"
-				+ "    '"+this.colunaTitulo+"', \r\n"
-				+ "    '"+this.mascara+"', \r\n"
-				+ "    '"+this.esquema+"' \r\n"
-				+ " FROM DUAL WHERE NOT EXISTS"
-				+ " (SELECT NULL FROM "+esquemaDestino+".NIVEL " 
-				+ " WHERE TIT_NIVEL = '"+this.titulo+"'); ";
+	    // Criar script para Nivel.
+	    return "INSERT INTO " + esquemaDestino + ".nivel ( \r\n"
+	            + "    id_nivel, \r\n"
+	            + "    id_dimensao, \r\n"
+	            + "    tit_nivel, \r\n"
+	            + "    tit_abreviado, \r\n"
+	            + "    tab_nivel, \r\n"
+	            + "    col_nivel, \r\n"
+	            + "    col_titulo, \r\n"
+	            + "    des_mascara, \r\n"
+	            + "    esquema \r\n"
+	            + ") SELECT \r\n"
+	            + "    (SELECT LPAD(MAX(ID_NIVEL)+1,6,'0') FROM " + esquemaDestino + ".NIVEL),\r\n"
+	            + "    (SELECT ID_DIMENSAO FROM \r\n"
+	            + "        " + esquemaDestino + ".DIMENSAO \r\n"
+	            + "        WHERE TIT_DIMENSAO = '" + this.dimensao.getTitulo() + "'), \r\n"
+	            + "    '" + this.titulo + "', \r\n"
+	            + "    '" + this.abreviacao + "', \r\n"
+	            + "    '" + this.tabelaNivel + "', \r\n"
+	            + "    '" + this.colunaNivel + "', \r\n"
+	            + "    '" + this.colunaTitulo + "', \r\n"
+	            + "    '" + this.mascara + "', \r\n"
+	            + "    '" + this.esquema + "' \r\n"
+	            + " FROM DUAL WHERE NOT EXISTS \r\n"
+	            + " (SELECT NULL FROM " + esquemaDestino + ".NIVEL \r\n"
+	            + "  WHERE TIT_NIVEL = '" + this.titulo + "' \r\n"
+	            + "    AND ID_DIMENSAO = (SELECT ID_DIMENSAO FROM \r\n"
+	            + "        " + esquemaDestino + ".DIMENSAO \r\n"
+	            + "        WHERE TIT_DIMENSAO = '" + this.dimensao.getTitulo() + "')); \r\n";
 	}
+
   @Override
   public String DML(String esquemaDestino, String idPropriedade) {
     // TODO Auto-generated method stub

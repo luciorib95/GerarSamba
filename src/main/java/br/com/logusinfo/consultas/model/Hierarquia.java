@@ -39,10 +39,6 @@ public class Hierarquia implements Exportavel{
         this.titulo = titulo;
     }
 
-    private String sqlValue(String valor) {
-      return valor == null ? null : valor.replace("'", "''");
-    } 
-
     /**
      * @return {@link #niveisHierarquia}
      */
@@ -56,6 +52,10 @@ public class Hierarquia implements Exportavel{
     public void setNiveisHierarquia(List<NivelHierarquia> niveisHierarquia) {
       this.niveisHierarquia = niveisHierarquia;
     }
+    
+    private String sqlValue(String valor) {
+      return valor == null ? null : "'" + valor.replace("'", "''") + "'";
+    }
 
     public String DML(String esquemaDestino) {
       String dml = "INSERT INTO " + esquemaDestino + ".HIERARQUIA (\n" 
@@ -66,13 +66,13 @@ public class Hierarquia implements Exportavel{
                + "    (SELECT LPAD(MAX(ID_HIERARQUIA)+1,6,'0') FROM " + esquemaDestino + ".HIERARQUIA),\r\n" 
                + "    (SELECT ID_DIMENSAO FROM " + esquemaDestino + ".DIMENSAO \r\n"
                + "      WHERE TIT_DIMENSAO = '" + this.getDimensao().getTitulo() + "'),\r\n"
-               + "    " + sqlValue(this.titulo) + "'),\r\n"
+               + "    " + sqlValue(this.titulo) + "\r\n"
                + " FROM DUAL\r\n"
                + "WHERE NOT EXISTS (\n" 
                + "    SELECT NULL FROM " + esquemaDestino + ".HIERARQUIA \n" 
                + "    WHERE TIT_HIERARQUIA = " + sqlValue(this.titulo) + " \n" 
-               + "   AND ID_DIMENSAO (SELECT ID_DIMENSAO FROM " + esquemaDestino + ".DIMENSAO \r\n"
-               + "      WHERE TIT_DIMENSAO = '" + this.getDimensao().getTitulo() + "'),\r\n"
+               + "   AND ID_DIMENSAO = (SELECT ID_DIMENSAO FROM " + esquemaDestino + ".DIMENSAO \r\n"
+               + "      WHERE TIT_DIMENSAO = '" + this.getDimensao().getTitulo() + "')\r\n"
                + ");\r\n";
         
         for (NivelHierarquia nivelhierarquia : this.getNiveisHierarquia()) {
@@ -102,7 +102,6 @@ public class Hierarquia implements Exportavel{
                 + "                      WHERE N.TIT_NIVEL = '" + nivelhierarquia.getNivel().getTitulo() + "' \r\n"
                 + "                        AND D.TIT_DIMENSAO = '" + this.getDimensao().getTitulo() + "')\r\n"
                 + ");\r\n";
-        dml += "-- ------------------------------\n";
           }
         }
         
