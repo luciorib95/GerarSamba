@@ -154,8 +154,10 @@ public class Propriedade implements Exportavel {
 	            + " (SELECT NULL FROM "+esquemaDestino+".PROPRIEDADE "
 	            + " WHERE "
 	            + "    ID_NIVEL = (SELECT ID_NIVEL FROM \r\n"
-	            + "     "+esquemaDestino+".NIVEL \r\n"
-	            + "     WHERE TIT_NIVEL = '"+this.nivel.getTitulo()+"') AND \r\n"
+	            + "     "+esquemaDestino+".NIVEL n \r\n"
+	            + "     JOIN " + esquemaDestino + ".DIMENSAO d ON n.ID_DIMENSAO = d.ID_DIMENSAO " 
+	            + "     WHERE n.TIT_NIVEL = '"+this.nivel.getTitulo()+"'"
+	            + "       AND d.TIT_DIMENSAO = '" + this.getNivel().getDimensao().getTitulo() + "') AND \r\n"
 	            + "    TIT_PROPRIEDADE = '"+this.titPropriedade+"'\r\n"
 	            + " ); \r\n";
 

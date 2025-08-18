@@ -95,8 +95,11 @@ public class Hierarquia implements Exportavel{
                 + " FROM DUAL\r\n"
                 + " WHERE NOT EXISTS (\r\n"
                 + "    SELECT NULL FROM " + esquemaDestino + ".nivel_hierarquia \r\n"
-                + "    WHERE ID_HIERARQUIA = (SELECT ID_HIERARQUIA FROM " + esquemaDestino + ".HIERARQUIA \r\n"
-                + "                    WHERE TIT_HIERARQUIA = '" + this.titulo + "')\r\n"
+                + "    WHERE ID_HIERARQUIA = (SELECT ID_HIERARQUIA FROM " + esquemaDestino + ".HIERARQUIA h \r\n"
+                + "                      JOIN " + esquemaDestino + ".DIMENSAO D ON h.ID_DIMENSAO = D.ID_DIMENSAO \r\n"
+                + "                 WHERE h.TIT_HIERARQUIA = '" + this.titulo + "'  AND D.TIT_DIMENSAO = '" 
+                +                    this.getDimensao().getTitulo() + "')\r\n"
+                
                 + "      AND ID_NIVEL = (SELECT N.ID_NIVEL FROM " + esquemaDestino + ".NIVEL N \r\n"
                 + "                      JOIN " + esquemaDestino + ".DIMENSAO D ON N.ID_DIMENSAO = D.ID_DIMENSAO \r\n"
                 + "                      WHERE N.TIT_NIVEL = '" + nivelhierarquia.getNivel().getTitulo() + "' \r\n"
